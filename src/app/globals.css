@@ -1,59 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-/* Color Theme */
-  --color-primary: #166534; 
+  /* Color Theme */
+  --color-primary: #166534;
   --color-secondary: #334155;
   --color-accent: #f59e0b;
 
-/* Typography/Font */
+  /* Typography/Font */
   --font-family: "Inter", sans-serif;
-
-  /* HOW TO USE TYPOGRAPHY */
-  /* GEARSPHERE TYPOGRAPHY STANDARD
-
-Font
-Inter
-
-Base
-16px / normal
-
-Page Title
-text-3xl font-bold
-
-Section Heading
-text-2xl font-semibold
-
-Subheading
-text-xl font-semibold
-
-Body
-text-base
-
-Supporting Text
-text-sm
-
-Caption / Metadata
-text-xs
-
-Weights
-400 = body
-500 = labels/buttons
-600 = headings
-700 = page titles
-
-Text Colors
-text-slate-900 = primary text
-text-slate-600 = secondary text
-text-slate-500 = supporting text
-text-slate-400 = muted text
-
-Guidelines
-- Use Tailwind typography classes.
-- Avoid arbitrary font sizes unless necessary.
-- Use Inter throughout the application.
-- Don't use multiple unrelated fonts.
-- Don't use primary green for ordinary body text.
-- Maintain consistent heading hierarchy. */
-
 }
