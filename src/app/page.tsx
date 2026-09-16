@@ -1,8 +1,6 @@
 import { getLandingContent } from "../supabase/landing";
 
 import type { Metadata } from "next";
-import Header from "../components/ui/header";
-import Footer from "../components/ui/footer";
 import LandingMotion from "../components/landing/LandingMotion";
 import Hero from "../components/landing/Hero";
 import ValueProps from "../components/landing/ValueProps";
@@ -27,7 +25,6 @@ export default async function Home() {
   const content = await getLandingContent();
   return (
     <div className={styles.page}>
-      <Header />
       <LandingMotion>
         <Hero />
         <ValueProps />
@@ -44,7 +41,6 @@ export default async function Home() {
         <Testimonials testimonials={content.testimonials} />
         <FinalCTA />
       </LandingMotion>
-      <Footer />
     </div>
   );
 }
