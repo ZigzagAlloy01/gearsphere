@@ -12,6 +12,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
+      <head>
+        <meta name="apple-mobile-gearsphere" content="GearSphere" />
+        <title>GearSphere</title>
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   );
