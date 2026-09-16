@@ -9,3 +9,7 @@
   /* Typography/Font */
   --font-family: "Inter", sans-serif;
 }
+
+.bg-secondary.text-white.p-4.categoriesindatabase {
+  margin: 0 0 6rem 0;
+}
