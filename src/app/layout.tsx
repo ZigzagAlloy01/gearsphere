@@ -18,10 +18,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <title>GearSphere</title>
       </head>
       <body className={inter.className}>
-
         {children}
       </body>
-      <Footer />
     </html>
   );
 }
