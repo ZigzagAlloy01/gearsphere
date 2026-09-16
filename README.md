@@ -89,3 +89,29 @@ GearSphere uses **Inter** as its primary typeface throughout the application.
 
 * Use **Inter** throughout the application.
 * Use Tailwind typography classes rather
+
+### GearSphere Dashboard
+
+┌─────────────────────────────────────────────────────────┐
+│ GearSphere     Dashboard  Browse  My Listings  Profile  │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Welcome back, user!                                    │
+│  Here's your current GearSphere account.                │
+│                                                         │
+│  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌────────┐   │
+│  │ Listings  │ │ Requests  │ │ Rentals   │ │Messages│   │
+│  │    5      │ │    3      │ │    2      │ │   4    │   │
+│  └───────────┘ └───────────┘ └───────────┘ └────────┘   │
+│                                                         │
+│  Quick Actions                                          │
+│  [+ List Equipment]  [Browse Equipment]                 │
+│                                                         │
+│  My Listings                         Recent Activity    │
+│  ┌────────────────────────┐          ┌───────────────┐  │
+│  │ Power Drill   Active   │          │ New request   │  │
+│  │ Generator     Rented   │          │ Rental agreed │  │
+│  │ Welder        Active   │          │ New message   │  │
+│  └────────────────────────┘          └───────────────┘  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
