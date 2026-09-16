@@ -2,6 +2,7 @@ import { getLandingContent } from "../supabase/landing";
 
 import type { Metadata } from "next";
 import LandingMotion from "../components/landing/LandingMotion";
+import Header from "../components/ui/header";
 import Hero from "../components/landing/Hero";
 import ValueProps from "../components/landing/ValueProps";
 import Categories from "../components/landing/Categories";
@@ -26,6 +27,7 @@ export default async function Home() {
   return (
     <div className={styles.page}>
       <LandingMotion>
+        <Header />
         <Hero />
         <ValueProps />
         <CatalogProvider>

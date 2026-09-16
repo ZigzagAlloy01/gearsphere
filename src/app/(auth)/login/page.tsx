@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 export default function LoginPage() {
@@ -9,7 +10,18 @@ export default function LoginPage() {
     <div className="w-full max-w-md">
       {/* Branding & Heading */}
       <div className="mb-8 text-center">
-        <div className="mb-4 text-2xl font-bold text-primary">GearSphere</div>
+        <div className="mb-4 flex justify-center">
+          {" "}
+          <Image
+            src={"/GearSphere-Logo.png"}
+            alt="GearSphere"
+            width={1120}
+            height={348}
+            className="h-auto w-45 rounded-sm sm:w-52.5]"
+            loading="eager"
+            
+          />
+        </div>
 
         <h1 className="text-3xl font-bold text-slate-900">Welcome back</h1>
 

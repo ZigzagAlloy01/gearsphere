@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
-import Header from "../components/ui/header";
 import Footer from "../components/ui/footer";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,8 +17,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <meta name="apple-mobile-gearsphere" content="GearSphere" />
         <title>GearSphere</title>
       </head>
-      <Header />
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+
+        {children}
+      </body>
       <Footer />
     </html>
   );
