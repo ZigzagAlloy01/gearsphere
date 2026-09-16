@@ -1,17 +1,12 @@
-import { auth } from "@/src/auth"
-
-export default auth((req) => {
-  const isLoggedIn = !!req.auth
-  const isDashboard = req.nextUrl.pathname.startsWith("/dashboard")
+import { type NextRequest } from 'next/server'
+import { updateSession } from '@/src/supabase/server'
 
   // If trying to access the dashboard without being logged in, redirect to login page
-  if (isDashboard && !isLoggedIn) {
-    const loginUrl = new URL("/login", req.nextUrl.origin)
-    return Response.redirect(loginUrl)
-  }
-})
+export async function middleware(request: NextRequest) {
+  return await updateSession(request)
+}
 
-// Protect all routes inside the dashboard folder
+// Protect all routes
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
 }
