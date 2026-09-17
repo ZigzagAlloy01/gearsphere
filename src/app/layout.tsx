@@ -16,7 +16,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <meta name="apple-mobile-gearsphere" content="GearSphere" />
         <title>GearSphere</title>
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+      </body>
     </html>
   );
 }

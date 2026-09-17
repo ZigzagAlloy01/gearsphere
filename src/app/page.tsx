@@ -1,9 +1,9 @@
-import { getLandingContent } from "../supabase/landing";
+import { getLandingContent } from "../lib/supabase/landing";
 
 import type { Metadata } from "next";
+import LandingMotion from "../components/landing/LandingMotion";
 import Header from "../components/ui/header";
 import Footer from "../components/ui/footer";
-import LandingMotion from "../components/landing/LandingMotion";
 import Hero from "../components/landing/Hero";
 import ValueProps from "../components/landing/ValueProps";
 import Categories from "../components/landing/Categories";
@@ -27,8 +27,8 @@ export default async function Home() {
   const content = await getLandingContent();
   return (
     <div className={styles.page}>
-      <Header />
       <LandingMotion>
+        <Header />
         <Hero />
         <ValueProps />
         <CatalogProvider>
@@ -43,8 +43,8 @@ export default async function Home() {
         <WhyGearSphere />
         <Testimonials testimonials={content.testimonials} />
         <FinalCTA />
+        <Footer />
       </LandingMotion>
-      <Footer />
     </div>
   );
 }

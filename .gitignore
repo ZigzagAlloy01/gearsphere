@@ -43,3 +43,6 @@ next-env.d.ts
 
 # VS Code
 .vscode/*
+
+# My Tasks
+TODO.md
