@@ -1,3 +1,5 @@
+import Footer from "@/src/components/ui/footer";
+
 export default function DashboardPage() {
   const stats = [
     { label: "Listings", value: 5 },
@@ -68,7 +70,7 @@ export default function DashboardPage() {
           </h1>
 
           <p className="mt-2 text-slate-500">
-            Here&aposs your current GearSphere account.
+            Here&apos;s your current GearSphere account.
           </p>
         </section>
 
@@ -164,6 +166,8 @@ export default function DashboardPage() {
           </div>
         </section>
       </div>
+      <Footer />
     </main>
+    
   );
 }
