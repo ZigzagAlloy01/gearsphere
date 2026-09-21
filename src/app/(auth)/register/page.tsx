@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useActionState } from "react";
+import { signupAction } from "./actions";
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [state, formAction, isPending] = useActionState(signupAction, null);
 
   return (
     <div className="w-full max-w-md">
@@ -31,14 +33,16 @@ export default function SignupPage() {
 
       {/* Signup Card */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <form className="space-y-5">
-          {/* Error Message - Ready for Authentication */}
-          <div
-            role="alert"
-            className="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-          >
-            Something went wrong. Please try again.
-          </div>
+        <form className="space-y-5" action={formAction}>
+          {/* Error Message */}
+          {state?.error && (
+            <div
+              role="alert"
+              className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            >
+              {state.error}
+            </div>
+          )}
 
           {/* Full Name */}
           <div>
@@ -53,6 +57,7 @@ export default function SignupPage() {
               id="name"
               name="name"
               type="text"
+              required
               autoComplete="name"
               placeholder="John Doe"
               className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20"
@@ -72,6 +77,7 @@ export default function SignupPage() {
               id="email"
               name="email"
               type="email"
+              required
               autoComplete="email"
               placeholder="you@example.com"
               className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20"
@@ -91,6 +97,7 @@ export default function SignupPage() {
               <input
                 id="password"
                 name="password"
+                required
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
                 placeholder="Create a password"
@@ -154,6 +161,7 @@ export default function SignupPage() {
               <input
                 id="confirmPassword"
                 name="confirmPassword"
+                required
                 type={showConfirmPassword ? "text" : "password"}
                 autoComplete="new-password"
                 placeholder="Confirm your password"
@@ -209,9 +217,10 @@ export default function SignupPage() {
           {/* Sign Up Button */}
           <button
             type="submit"
-            className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 active:scale-[0.99]"
+            disabled={isPending}
+            className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 active:scale-[0.99] disabled:opacity-50"
           >
-            Create account
+            {isPending ? "Creating account..." : "Create account"}
           </button>
         </form>
 
