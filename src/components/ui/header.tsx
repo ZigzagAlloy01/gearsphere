@@ -18,7 +18,7 @@ export function Brand({ footer = false }: { footer?: boolean }) {
   );
 }
 
-export default function Header() {
+export default function Header({ userName = null }: { userName?: string | null }) {
   return (
     <header className={styles.header}>
       <a className={styles.skip} href="#main-content">
@@ -28,7 +28,7 @@ export default function Header() {
         className={`${styles.container} flex min-h-20 items-center justify-between gap-6`}
       >
         <Brand />
-        <Navbar />
+        <Navbar userName={userName} />
       </div>
     </header>
   );
