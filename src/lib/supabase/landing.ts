@@ -86,7 +86,7 @@ export async function getLandingContent() {
   const [categories, listings, reviews] = await Promise.all([
     read("categories", "*", true),
     // Optional image/currency fields may be added without breaking older schemas.
-    read("available_listings", "*"),
+    read("listings", "*"),
     read("reviews", "id,comment,rating,created_at"),
   ]);
 

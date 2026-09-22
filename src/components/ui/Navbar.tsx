@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useActionState, useRef, useState } from "react";
+import { logoutAction } from "@/src/app/(auth)/logout/actions";
 import Icon from "../landing/Icon";
 import styles from "../landing/landing.module.css";
 
@@ -11,7 +12,63 @@ const links = [
   { href: "#how-it-works", label: "How It Works" },
 ];
 
-export default function Navbar() {
+function AccountLinks({
+  userName,
+  onNavigate,
+}: {
+  userName: string | null;
+  onNavigate?: () => void;
+}) {
+  const [state, action, pending] = useActionState(logoutAction, null);
+
+  if (!userName) {
+    return (
+      <>
+        <Link href="/login" className={styles.navLink} onClick={onNavigate}>
+          Log In
+        </Link>
+        <Link
+          href="/register"
+          className={`${styles.button} ${styles.primary}`}
+          onClick={onNavigate}
+        >
+          Get Started
+          <Icon name="arrow" width={16} height={16} />
+        </Link>
+      </>
+    );
+  }
+
+  const initials = userName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+
+  return (
+    <>
+      <Link
+        href="/dashboard"
+        aria-label={`${userName} — Go to dashboard`}
+        className={`${styles.navLink} min-w-0 gap-2`}
+        onClick={onNavigate}
+      >
+        <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+          {initials}
+        </span>
+        <span className="max-w-32 truncate" title={userName}>{userName}</span>
+      </Link>
+      <form action={action} className="relative shrink-0">
+        <button type="submit" disabled={pending} className={`${styles.navLink} disabled:cursor-wait disabled:opacity-60`}>
+          {pending ? "Logging out…" : "Log Out"}
+        </button>
+        {state?.error && (
+          <p role="alert" className="absolute right-0 top-full z-40 w-52 rounded-lg border border-red-100 bg-white p-3 text-xs text-red-700 shadow-sm">
+            {state.error}
+          </p>
+        )}
+      </form>
+    </>
+  );
+}
+
+export default function Navbar({ userName = null }: { userName?: string | null }) {
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
   return (
@@ -27,13 +84,7 @@ export default function Navbar() {
         ))}
       </nav>
       <div className="hidden items-center gap-6 lg:flex">
-        <Link href="/login" className={styles.navLink}>
-          Log In
-        </Link>
-        <Link href="/register" className={`${styles.button} ${styles.primary}`}>
-          Get Started
-          <Icon name="arrow" width={16} height={16} />
-        </Link>
+        <AccountLinks userName={userName} />
       </div>
       <button
         ref={toggle}
@@ -72,21 +123,7 @@ export default function Navbar() {
               </a>
             ))}
             <div className="mt-3 flex items-center gap-6 border-t border-slate-100 pt-4">
-              <Link
-                href="/login"
-                className={styles.navLink}
-                onClick={() => setOpen(false)}
-              >
-                Log In
-              </Link>
-              <Link
-                href="/register"
-                className={`${styles.button} ${styles.primary}`}
-                onClick={() => setOpen(false)}
-              >
-                Get Started
-                <Icon name="arrow" width={16} height={16} />
-              </Link>
+              <AccountLinks userName={userName} onNavigate={() => setOpen(false)} />
             </div>
           </div>
         </nav>

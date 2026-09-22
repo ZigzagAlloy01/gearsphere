@@ -1,4 +1,5 @@
 import { getLandingContent } from "../lib/supabase/landing";
+import { createClient } from "../lib/supabase/server";
 
 import type { Metadata } from "next";
 import LandingMotion from "../components/landing/LandingMotion";
@@ -25,10 +26,16 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const content = await getLandingContent();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const fullName = user?.user_metadata?.full_name;
+  const userName = user
+    ? (typeof fullName === "string" && fullName.trim()) || "My Account"
+    : null;
   return (
     <div className={styles.page}>
       <LandingMotion>
-        <Header />
+        <Header userName={userName} />
         <Hero />
         <ValueProps />
         <CatalogProvider>
