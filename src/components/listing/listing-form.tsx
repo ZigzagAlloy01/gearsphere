@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { saveListing, type ListingActionState } from "./actions";
+import { saveListing, type ListingActionState } from "@/src/app/(dashboard)/listings/actions";
 
 type Category = {
   id: string;
@@ -27,6 +27,10 @@ type ListingFormProps = {
 };
 
 const initialState: ListingActionState = {};
+
+// -------------------------
+// LISTING FORM COMPONENT
+// -------------------------
 
 export default function ListingForm({
   categories,

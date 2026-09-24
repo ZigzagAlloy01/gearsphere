@@ -4,22 +4,26 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/src/lib/supabase/server";
 
+// Type for the state returned by the saveListing action
 export type ListingActionState = {
   error?: string;
 };
 
+// Helper function to get a string value from FormData
 function getString(formData: FormData, name: string) {
   const value = formData.get(name);
 
   return typeof value === "string" ? value.trim() : "";
 }
 
+// Helper function to get an optional string value from FormData
 function getOptionalString(formData: FormData, name: string) {
   const value = getString(formData, name);
 
   return value || null;
 }
 
+// Helper function to get an optional number value from FormData
 function getOptionalNumber(formData: FormData, name: string) {
   const value = getString(formData, name);
 
@@ -31,6 +35,10 @@ function getOptionalNumber(formData: FormData, name: string) {
 
   return Number.isFinite(number) ? number : null;
 }
+
+// -------------------------
+// SAVE LISTING ACTION
+// -------------------------
 
 export async function saveListing(
   prevState: ListingActionState | null,
@@ -49,6 +57,10 @@ export async function saveListing(
   if (!user) {
     redirect("/login");
   }
+
+  // -------------------------
+  // Extract form data
+  // -------------------------
 
   const id = getString(formData, "id");
 
@@ -96,6 +108,10 @@ export async function saveListing(
     return { error: "Longitude must be between -180 and 180." };
   }
 
+  // -------------------------
+  // Prepare data for insertion or update
+  // -------------------------
+
   const listingData = {
     title,
     description,
@@ -110,7 +126,7 @@ export async function saveListing(
   };
 
   // -------------------------
-  // CREATE
+  // CREATE LISTING ACTION
   // -------------------------
 
   if (!id) {
@@ -136,7 +152,7 @@ export async function saveListing(
   }
 
   // -------------------------
-  // UPDATE
+  // UPDATE LISTING ACTION
   // -------------------------
 
   /*
@@ -157,7 +173,8 @@ export async function saveListing(
     console.error("Update listing error:", error);
 
     return {
-      error: "Listing could not be updated. It may not exist or you may not own it.",
+      error:
+        "Listing could not be updated. It may not exist or you may not own it.",
     };
   }
 
@@ -167,6 +184,9 @@ export async function saveListing(
   redirect("/listings");
 }
 
+// -------------------------
+// DELETE LISTING ACTION
+// -------------------------
 export async function deleteListing(
   prevState: ListingActionState | null,
   formData: FormData,
@@ -204,7 +224,8 @@ export async function deleteListing(
     console.error("Delete listing error:", error);
 
     return {
-      error: "Listing could not be deleted. It may not exist or you may not own it.",
+      error:
+        "Listing could not be deleted. It may not exist or you may not own it.",
     };
   }
 

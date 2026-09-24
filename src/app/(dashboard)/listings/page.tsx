@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/src/lib/supabase/server";
-// import ListingCard from "./listing-card";
+import ListingCard from "@/src/components/listing/listing-card";
 
 export default async function ListingsPage() {
   const supabase = await createClient();
@@ -152,17 +152,17 @@ export default async function ListingsPage() {
             </span>
           </div>
 
-          {/* <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {listings.map((listing) => (
               <ListingCard
                 key={listing.id}
                 listing={listing}
               />
             ))}
-          </div> */}
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="text-salte-600">Your listing will appear here </p>
           </div>
+          {/* <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-salte-600">Your listing will appear here </p>
+          </div> */}
         </section>
       )}
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { createClient } from "@/src/lib/supabase/server";
-import ListingForm from "../../listing-form";
+import ListingForm from "@/src/components/listing/listing-form";
 
 type EditListingPageProps = {
   params: Promise<{
