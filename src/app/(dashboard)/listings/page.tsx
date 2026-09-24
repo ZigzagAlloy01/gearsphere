@@ -19,7 +19,8 @@ export default async function ListingsPage() {
     await Promise.all([
       supabase
         .from("listings")
-        .select(`
+        .select(
+          `
           id,
           title,
           description,
@@ -31,14 +32,12 @@ export default async function ListingsPage() {
           category:categories (
             name
           )
-        `)
+        `,
+        )
         .eq("owner_id", user.id)
         .order("created_at", { ascending: false }),
 
-      supabase
-        .from("categories")
-        .select("id, name")
-        .order("name"),
+      supabase.from("categories").select("id, name").order("name"),
     ]);
 
   if (listingsError) {
@@ -56,14 +55,12 @@ export default async function ListingsPage() {
             Equipment Management
           </p>
 
-          <h1 className="text-3xl font-bold text-slate-900">
-            My Listings
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-900">My Listings</h1>
 
           <p className="mt-2 max-w-2xl text-slate-500">
-            Manage the equipment you have listed on GearSphere.
-            Create new listings, update existing ones, or remove
-            equipment that is no longer available.
+            Manage the equipment you have listed on GearSphere. Create new
+            listings, update existing ones, or remove equipment that is no
+            longer available.
           </p>
         </div>
 
@@ -78,9 +75,7 @@ export default async function ListingsPage() {
       {/* Summary */}
       <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">
-            Total Listings
-          </p>
+          <p className="text-sm font-medium text-slate-500">Total Listings</p>
 
           <p className="mt-2 text-3xl font-bold text-slate-900">
             {listingCount}
@@ -88,26 +83,20 @@ export default async function ListingsPage() {
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">
-            Available
-          </p>
+          <p className="text-sm font-medium text-slate-500">Available</p>
 
           <p className="mt-2 text-3xl font-bold text-primary">
-            {listings?.filter(
-              (listing) => listing.status === "available",
-            ).length ?? 0}
+            {listings?.filter((listing) => listing.status === "available")
+              .length ?? 0}
           </p>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">
-            Other Status
-          </p>
+          <p className="text-sm font-medium text-slate-500">Other Status</p>
 
           <p className="mt-2 text-3xl font-bold text-slate-900">
-            {listings?.filter(
-              (listing) => listing.status !== "available",
-            ).length ?? 0}
+            {listings?.filter((listing) => listing.status !== "available")
+              .length ?? 0}
           </p>
         </div>
       </section>
@@ -128,8 +117,8 @@ export default async function ListingsPage() {
           </h2>
 
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-            Start sharing your equipment with the GearSphere
-            community by creating your first listing.
+            Start sharing your equipment with the GearSphere community by
+            creating your first listing.
           </p>
 
           <Link
@@ -147,8 +136,7 @@ export default async function ListingsPage() {
             </h2>
 
             <span className="text-sm text-slate-500">
-              {listingCount}{" "}
-              {listingCount === 1 ? "listing" : "listings"}
+              {listingCount} {listingCount === 1 ? "listing" : "listings"}
             </span>
           </div>
 
@@ -156,13 +144,9 @@ export default async function ListingsPage() {
             {listings.map((listing) => (
               <ListingCard
                 key={listing.id}
-                listing={listing}
-              />
+                listing={listing} />
             ))}
           </div>
-          {/* <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <p className="text-salte-600">Your listing will appear here </p>
-          </div> */}
         </section>
       )}
 

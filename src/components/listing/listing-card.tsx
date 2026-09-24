@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { deleteListing } from "@/src/app/(dashboard)/listings/actions";
+import DeleteListingButton from "@/src/components/listing/delete-listing-button";
 
 type ListingCardProps = {
   listing: {
@@ -86,16 +86,8 @@ export default function ListingCard({ listing }: ListingCardProps) {
             Edit
           </Link>
 
-          <form action={deleteListing} className="flex-1">
-            <input type="hidden" name="id" value={listing.id} />
-
-            <button
-              type="submit"
-              className="w-full rounded-lg border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-            >
-              Delete
-            </button>
-          </form>
+          <DeleteListingButton listingId={listing.id} />
+          
         </div>
       </div>
     </article>
