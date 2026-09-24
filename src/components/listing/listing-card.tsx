@@ -11,9 +11,12 @@ type ListingCardProps = {
     city: string | null;
     state: string | null;
     country: string | null;
-    category: {
-      name: string;
-    } | null;
+    category:
+      | {
+          name: string;
+        }
+      | { name: string }[]
+      | null;
   };
 };
 
@@ -21,6 +24,11 @@ export default function ListingCard({ listing }: ListingCardProps) {
   const location = [listing.city, listing.state, listing.country]
     .filter(Boolean)
     .join(", ");
+
+  // Safely extract the category name whether Supabase returns an object or an array
+  const categoryName = Array.isArray(listing.category)
+    ? listing.category[0]?.name
+    : listing.category?.name;
 
   return (
     <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
@@ -30,7 +38,6 @@ export default function ListingCard({ listing }: ListingCardProps) {
           <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-full bg-primary/10 text-2xl">
             🧰
           </div>
-
           <p className="text-xs font-medium text-slate-400">Equipment image</p>
         </div>
       </div>
@@ -39,7 +46,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
         {/* Category + Status */}
         <div className="mb-3 flex items-center justify-between gap-3">
           <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-            {listing.category?.name ?? "Uncategorized"}
+            {categoryName ?? "Uncategorized"}
           </span>
 
           <span
@@ -73,7 +80,6 @@ export default function ListingCard({ listing }: ListingCardProps) {
           <span className="text-2xl font-bold text-slate-900">
             ${Number(listing.price_per_day).toFixed(2)}
           </span>
-
           <span className="ml-1 text-sm text-slate-500">/ day</span>
         </div>
 
@@ -87,7 +93,6 @@ export default function ListingCard({ listing }: ListingCardProps) {
           </Link>
 
           <DeleteListingButton listingId={listing.id} />
-          
         </div>
       </div>
     </article>
