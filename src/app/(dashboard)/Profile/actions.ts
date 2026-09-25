@@ -3,11 +3,21 @@
 import { createClient } from "@/src/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-export async function updateProfileAction(formData: FormData): Promise<void> {
+export type ProfileActionState = {
+  error?: string;
+  success?: string;
+};
+
+export async function updateProfileAction(
+  _prevState: ProfileActionState | null,
+  formData: FormData,
+): Promise<ProfileActionState> {
   const fullName = formData.get("fullName")?.toString().trim();
 
   if (!fullName) {
-    return;
+    return {
+      error: "Please enter your full name.",
+    };
   }
 
   const supabase = await createClient();
@@ -17,7 +27,9 @@ export async function updateProfileAction(formData: FormData): Promise<void> {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return;
+    return {
+      error: "You must be signed in to update your profile.",
+    };
   }
 
   const { error } = await supabase.auth.updateUser({
@@ -27,8 +39,14 @@ export async function updateProfileAction(formData: FormData): Promise<void> {
   });
 
   if (error) {
-    return;
+    return {
+      error: "Unable to update your profile. Please try again.",
+    };
   }
 
   revalidatePath("/Profile");
+
+  return {
+    success: "Profile updated successfully.",
+  };
 }

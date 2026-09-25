@@ -1,6 +1,6 @@
 import { createClient } from "@/src/lib/supabase/server";
 import { logoutAction } from "@/src/app/(auth)/logout/actions";
-import { updateProfileAction } from "./actions";
+import ProfileForm from "./profile-form";
 
 export default async function ProfilePage() {
   async function profileLogoutAction() {
@@ -120,40 +120,18 @@ export default async function ProfilePage() {
         </div>
 
         {/* Edit Profile */}
-        <div className="mt-6 rounded-xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-          <h3 className="text-lg font-semibold text-secondary sm:text-xl">
-            Edit Profile
-          </h3>
+          <div className="mt-6 rounded-xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
+            <h3 className="text-lg font-semibold text-secondary sm:text-xl">
+              Edit Profile
+            </h3>
 
-          <p className="mt-2 text-sm text-gray-600 sm:text-base">
-            Update the name associated with your GearSphere account.
-          </p>
+            <p className="mt-2 text-sm text-gray-600 sm:text-base">
+              Update the name associated with your GearSphere account.
+            </p>
 
-          <form action={updateProfileAction} className="mt-6 max-w-xl">
-            <label
-              htmlFor="fullName"
-              className="mb-2 block text-sm font-medium text-gray-700"
-            >
-              Full Name
-            </label>
+            <ProfileForm fullName={fullName} />
+          </div>
 
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              defaultValue={fullName}
-              required
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-secondary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-            />
-
-            <button
-              type="submit"
-              className="mt-4 w-full rounded-lg bg-primary px-5 py-3 text-sm font-medium text-white transition hover:opacity-90 sm:w-auto"
-            >
-              Save Changes
-            </button>
-          </form>
-        </div>
 
         {/* Account Settings */}
         <div className="mt-6 rounded-xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
