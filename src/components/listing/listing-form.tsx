@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { createClient } from "@/src/lib/supabase/client";
 import {
   saveListing,
   type ListingActionState,
@@ -49,6 +50,63 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
   const isEditing = Boolean(listing);
 
   const [SelectedImages, setSelectedImages] = useState<SelectedImage[]>([]);
+
+  useEffect(() => {
+    console.log("Upload effect triggered", {
+      listingId: state?.listingId,
+      imageCount: SelectedImages.length,
+    });
+
+    if (!state?.listingId || SelectedImages.length === 0) {
+      return;
+    }
+
+    async function uploadImages() {
+      const supabase = createClient();
+
+      for (const selectedImage of SelectedImages) {
+        const file = selectedImage.file;
+
+        const fileExtension = file.name.split(".").pop();
+        const uniqueFileName = `${crypto.randomUUID()}.${fileExtension}`;
+
+        const filePath = `listings/${state.listingId}/${uniqueFileName}`;
+
+        const { error } = await supabase.storage
+          .from("listing-images")
+          .upload(filePath, file);
+
+        if (error) {
+          console.error("Image upload error:", error);
+          return;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("listing-images")
+          .getPublicUrl(filePath);
+
+        const imageUrl = publicUrlData.publicUrl;
+
+        const { error: imageRecordError } = await supabase
+          .from("listing_images")
+          .insert({
+            listing_id: state.listingId,
+            image_url: imageUrl,
+            storage_path: filePath,
+            display_order: 0,
+          });
+
+        if (imageRecordError) {
+          console.error("Listing image record error:", imageRecordError);
+          return;
+        }
+
+        console.log("Image uploaded successfully:", filePath);
+      }
+    }
+
+    uploadImages();
+  }, [state?.listingId, SelectedImages]);
 
   return (
     <form action={formAction} className="space-y-6">
@@ -233,7 +291,7 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
               id="country"
               name="country"
               type="text"
-              defaultValue={listing?.country ?? "USA"}
+              defaultValue={listing?.country ?? ""}
               placeholder="Country"
               className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
             />

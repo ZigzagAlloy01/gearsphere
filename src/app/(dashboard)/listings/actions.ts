@@ -7,6 +7,7 @@ import { createClient } from "@/src/lib/supabase/server";
 // Type for the state returned by the saveListing action
 export type ListingActionState = {
   error?: string;
+  listingId?: string;
 };
 
 // Helper function to get a string value from FormData
@@ -134,21 +135,28 @@ export async function saveListing(
      * owner_id comes from the authenticated user.
      * It is deliberately NOT taken from FormData.
      */
-    const { error } = await supabase.from("listings").insert({
-      ...listingData,
-      owner_id: user.id,
-    });
+    const { data, error } = await supabase
+      .from("listings")
+      .insert({
+        ...listingData,
+        owner_id: user.id,
+      })
+      .select("id")
+      .single();
 
-    if (error) {
+    if (error || !data) {
       console.error("Create listing error:", error);
 
       return {
-        error: error.message,
+        error: error?.message ?? "The listing could not be created.",
       };
     }
 
     revalidatePath("/listings");
-    redirect("/listings");
+
+    return {
+      listingId: data.id,
+    };
   }
 
   // -------------------------
