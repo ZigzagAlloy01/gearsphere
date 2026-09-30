@@ -283,7 +283,9 @@ export async function saveListing(
   revalidatePath("/listings");
   revalidatePath(`/listings/${id}/edit`);
 
-  redirect("/listings");
+  return {
+    listingId: data.id,
+  };
 }
 
 // -------------------------

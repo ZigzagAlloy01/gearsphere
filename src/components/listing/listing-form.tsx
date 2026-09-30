@@ -62,11 +62,6 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
   const [RemovedImageIds, setRemovedImageIds] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log("Upload effect triggered", {
-      listingId: state?.listingId,
-      imageCount: SelectedImages.length,
-    });
-
     if (!state?.listingId || SelectedImages.length === 0) {
       return;
     }
