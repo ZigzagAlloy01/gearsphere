@@ -41,7 +41,10 @@ export default function ListingCard({ listing }: ListingCardProps) {
   return (
     <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
       {/* Equipment image */}
-      <div className="h-40 overflow-hidden bg-slate-100">
+      <Link
+        href={`/listings/${listing.id}`}
+        className="block h-40 overflow-hidden bg-slate-100"
+      >
         {primaryImage ? (
           <img
             src={primaryImage}
@@ -73,7 +76,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
             </div>
           </div>
         )}
-      </div>
+      </Link>
 
       <div className="p-5">
         {/* Category + Status */}
@@ -94,9 +97,12 @@ export default function ListingCard({ listing }: ListingCardProps) {
         </div>
 
         {/* Title */}
-        <h2 className="line-clamp-1 text-xl font-semibold text-slate-900">
+        <Link
+          href={`/listings/${listing.id}`}
+          className="line-clamp-1 text-xl font-semibold text-slate-900 hover:text-primary"
+        >
           {listing.title}
-        </h2>
+        </Link>
 
         {/* Description */}
         <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
