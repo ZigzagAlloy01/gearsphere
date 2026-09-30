@@ -64,7 +64,7 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
     async function uploadImages() {
       const supabase = createClient();
 
-      for (const selectedImage of SelectedImages) {
+      for (const [index, selectedImage] of SelectedImages.entries()) {
         const file = selectedImage.file;
 
         const fileExtension = file.name.split(".").pop();
@@ -93,15 +93,18 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
             listing_id: state.listingId,
             image_url: imageUrl,
             storage_path: filePath,
-            display_order: 0,
+            display_order: index,
           });
 
         if (imageRecordError) {
           console.error("Listing image record error:", imageRecordError);
-          return;
-        }
 
-        console.log("Image uploaded successfully:", filePath);
+          await supabase.storage
+            .from("listing-images")
+            .remove([filePath]);
+
+            return;
+        }
       }
     }
 
