@@ -29,7 +29,8 @@ export default async function EditListingPage({
     await Promise.all([
       supabase
         .from("listings")
-        .select(`
+        .select(
+          `
           id,
           title,
           description,
@@ -39,16 +40,20 @@ export default async function EditListingPage({
           state,
           country,
           latitude,
-          longitude
-        `)
+          longitude,
+          listing_images (
+            id,
+            image_url,
+            storage_path,
+            display_order
+          )
+        `,
+        )
         .eq("id", id)
         .eq("owner_id", user.id)
         .single(),
 
-      supabase
-        .from("categories")
-        .select("id, name")
-        .order("name"),
+      supabase.from("categories").select("id, name").order("name"),
     ]);
 
   if (listingError || !listing) {
@@ -65,9 +70,7 @@ export default async function EditListingPage({
           ← Back to My Listings
         </Link>
 
-        <h1 className="mt-5 text-3xl font-bold text-slate-900">
-          Edit Listing
-        </h1>
+        <h1 className="mt-5 text-3xl font-bold text-slate-900">Edit Listing</h1>
 
         <p className="mt-2 text-slate-500">
           Update the details of your equipment listing.
@@ -75,10 +78,7 @@ export default async function EditListingPage({
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-        <ListingForm
-          listing={listing}
-          categories={categories ?? []}
-        />
+        <ListingForm listing={listing} categories={categories ?? []} />
       </div>
     </div>
   );

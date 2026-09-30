@@ -218,7 +218,51 @@ export async function deleteListing(
   }
 
   /*
-   * Again, ownership is part of the database operation.
+   * Get the Storage paths belonging to this listing.
+   */
+  const { data: images, error: imagesError } = await supabase
+    .from("listing_images")
+    .select("storage_path")
+    .eq("listing_id", id);
+
+  if (imagesError) {
+    console.error("Get listing images error:", imagesError);
+
+    return {
+      error: "Listing images could not be found.",
+    };
+  }
+
+  /*
+   * Remove the actual image files from Supabase Storage.
+   *
+   * Only storage_path values are sent to Storage.
+   * Records with no storage_path are ignored.
+   */
+  const storagePaths =
+    images
+      ?.map((image) => image.storage_path)
+      .filter((path): path is string => Boolean(path)) ?? [];
+
+  if (storagePaths.length > 0) {
+    const { error: storageError } = await supabase.storage
+      .from("listing-images")
+      .remove(storagePaths);
+
+    if (storageError) {
+      console.error("Delete listing images error:", storageError);
+
+      return {
+        error: "Listing images could not be deleted.",
+      };
+    }
+  }
+
+  /*
+   * Delete the listing itself.
+   *
+   * The listing_images database records will be removed
+   * automatically because listing_id uses ON DELETE CASCADE.
    */
   const { data, error } = await supabase
     .from("listings")

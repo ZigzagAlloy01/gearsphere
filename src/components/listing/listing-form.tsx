@@ -12,6 +12,14 @@ type Category = {
   name: string;
 };
 
+type ListingImage = {
+  id: string;
+
+  image_url: string;
+  storage_path: string | null;
+  display_order: number;
+};
+
 type Listing = {
   id: string;
   title: string;
@@ -23,6 +31,7 @@ type Listing = {
   country: string | null;
   latitude: number | null;
   longitude: number | null;
+  listing_images: ListingImage[];
 };
 
 type SelectedImage = {
@@ -99,11 +108,9 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
         if (imageRecordError) {
           console.error("Listing image record error:", imageRecordError);
 
-          await supabase.storage
-            .from("listing-images")
-            .remove([filePath]);
+          await supabase.storage.from("listing-images").remove([filePath]);
 
-            return;
+          return;
         }
       }
     }
@@ -422,8 +429,28 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
             />
           </label>
 
-          {SelectedImages.length > 0 && (
+          {(listing?.listing_images.length > 0 ||
+            SelectedImages.length > 0) && (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              {listing?.listing_images
+                .sort((a, b) => a.display_order - b.display_order)
+                .map((image, index) => (
+                  <div
+                    key={image.id}
+                    className="relative overflow-hidden rounded-lg border border-slate-200 bg-white"
+                  >
+                    <img
+                      src={image.image_url}
+                      alt={`Equipment image ${index + 1}`}
+                      className="aspect-square w-full object-cover"
+                    />
+
+                    <span className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
+                      Existing
+                    </span>
+                  </div>
+                ))}
+
               {SelectedImages.map((image, index) => (
                 <div
                   key={`${image.file.name}-${index}`}
@@ -431,7 +458,7 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
                 >
                   <img
                     src={image.preview}
-                    alt={`Selected equipment image ${index + 1}`}
+                    alt={`New equipment image ${index + 1}`}
                     className="aspect-square w-full object-cover"
                   />
 
