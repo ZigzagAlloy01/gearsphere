@@ -69,6 +69,8 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
     async function uploadImages() {
       const supabase = createClient();
 
+      const existingImageCount = listing?.listing_images.length ?? 0;
+
       for (const [index, selectedImage] of SelectedImages.entries()) {
         const file = selectedImage.file;
 
@@ -98,7 +100,7 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
             listing_id: state.listingId,
             image_url: imageUrl,
             storage_path: filePath,
-            display_order: index,
+            display_order: existingImageCount + index,
           });
 
         if (imageRecordError) {
