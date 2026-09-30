@@ -169,6 +169,101 @@ export async function saveListing(
    * Even before RLS exists, this prevents a logged-in user
    * from updating somebody else's listing through this action.
    */
+  const removedImageIdsValue = getString(formData, "removed_image_ids");
+
+  let removedImageIds: string[] = [];
+
+  if (removedImageIdsValue) {
+    try {
+      const parsed = JSON.parse(removedImageIdsValue);
+
+      if (Array.isArray(parsed)) {
+        removedImageIds = parsed.filter(
+          (value): value is string => typeof value === "string",
+        );
+      }
+    } catch {
+      return {
+        error: "The selected images could not be processed.",
+      };
+    }
+  }
+
+  /*
+   * Verify that the listing belongs to the current user
+   * before touching any of its images.
+   */
+  const { data: ownedListing, error: ownershipError } = await supabase
+    .from("listings")
+    .select("id")
+    .eq("id", id)
+    .eq("owner_id", user.id)
+    .single();
+
+  if (ownershipError || !ownedListing) {
+    return {
+      error: "Listing could not be found or you do not own it.",
+    };
+  }
+
+  /*
+   * Remove selected images.
+   */
+  if (removedImageIds.length > 0) {
+    const { data: images, error: imagesError } = await supabase
+      .from("listing_images")
+      .select("id, storage_path")
+      .eq("listing_id", id)
+      .in("id", removedImageIds);
+
+    if (imagesError) {
+      console.error("Get images for removal error:", imagesError);
+
+      return {
+        error: "The selected images could not be found.",
+      };
+    }
+
+    const storagePaths =
+      images
+        ?.map((image) => image.storage_path)
+        .filter((path): path is string => Boolean(path)) ?? [];
+
+    if (storagePaths.length > 0) {
+      const { error: storageError } = await supabase.storage
+        .from("listing-images")
+        .remove(storagePaths);
+
+      if (storageError) {
+        console.error(
+          "Remove listing images from storage error:",
+          storageError,
+        );
+
+        return {
+          error: "The selected images could not be deleted.",
+        };
+      }
+    }
+
+    const { error: deleteImagesError } = await supabase
+      .from("listing_images")
+      .delete()
+      .eq("listing_id", id)
+      .in("id", removedImageIds);
+
+    if (deleteImagesError) {
+      console.error("Delete listing image records error:", deleteImagesError);
+
+      return {
+        error: "The selected image records could not be deleted.",
+      };
+    }
+  }
+
+  /*
+   * Update the listing itself.
+   */
   const { data, error } = await supabase
     .from("listings")
     .update(listingData)
@@ -181,8 +276,7 @@ export async function saveListing(
     console.error("Update listing error:", error);
 
     return {
-      error:
-        "Listing could not be updated. It may not exist or you may not own it.",
+      error: error?.message ?? "The listing could not be updated.",
     };
   }
 

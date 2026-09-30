@@ -59,6 +59,7 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
   const isEditing = Boolean(listing);
 
   const [SelectedImages, setSelectedImages] = useState<SelectedImage[]>([]);
+  const [RemovedImageIds, setRemovedImageIds] = useState<string[]>([]);
 
   useEffect(() => {
     console.log("Upload effect triggered", {
@@ -121,6 +122,14 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
   return (
     <form action={formAction} className="space-y-6">
       {listing && <input type="hidden" name="id" value={listing.id} />}
+
+      {isEditing && (
+        <input
+          type="hidden"
+          name="removed_image_ids"
+          value={JSON.stringify(RemovedImageIds)}
+        />
+      )}
 
       {state?.error && (
         <div
@@ -433,6 +442,7 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
             SelectedImages.length > 0) && (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {listing?.listing_images
+                .filter((image) => !RemovedImageIds.includes(image.id))
                 .sort((a, b) => a.display_order - b.display_order)
                 .map((image, index) => (
                   <div
@@ -448,6 +458,16 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
                     <span className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
                       Existing
                     </span>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRemovedImageIds((current) => [...current, image.id]);
+                      }}
+                      className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white transition hover:bg-black"
+                    >
+                      Remove
+                    </button>
                   </div>
                 ))}
 
