@@ -31,6 +31,10 @@ export default async function ListingsPage() {
           country,
           category:categories (
             name
+          ),
+          listing_images (
+            image_url,
+            display_order
           )
         `,
         )
@@ -41,7 +45,12 @@ export default async function ListingsPage() {
     ]);
 
   if (listingsError) {
-    console.error("Listings query error:", listingsError);
+    console.error("LISTINGS QUERY ERROR");
+    console.error("message:", listingsError.message);
+    console.error("details:", listingsError.details);
+    console.error("hint:", listingsError.hint);
+    console.error("code:", listingsError.code);
+    console.error("full error:", listingsError);
   }
 
   const listingCount = listings?.length ?? 0;
@@ -142,9 +151,7 @@ export default async function ListingsPage() {
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {listings.map((listing) => (
-              <ListingCard
-                key={listing.id}
-                listing={listing} />
+              <ListingCard key={listing.id} listing={listing} />
             ))}
           </div>
         </section>
