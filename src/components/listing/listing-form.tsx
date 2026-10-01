@@ -446,7 +446,7 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
             />
           </label>
 
-          {(listing?.listing_images.length > 0 ||
+          {((listing?.listing_images?.length ?? 0) > 0 ||
             SelectedImages.length > 0) && (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
               {listing?.listing_images

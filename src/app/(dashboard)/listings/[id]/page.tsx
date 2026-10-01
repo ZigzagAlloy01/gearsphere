@@ -60,7 +60,7 @@ export default async function ListingDetailPage({
 
   const categoryName = Array.isArray(listing.category)
     ? listing.category[0]?.name
-    : listing.category?.name;
+    : undefined;
 
   const location = [listing.city, listing.state, listing.country]
     .filter(Boolean)
