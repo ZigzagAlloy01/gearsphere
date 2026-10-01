@@ -137,6 +137,17 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
         </div>
       )}
 
+      {state?.listingId && (
+        <div
+          role="status"
+          className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+        >
+          {isEditing
+            ? "Listing updated successfully."
+            : "Listing created successfully."}
+        </div>
+      )}
+
       {/* Basic Information */}
       <section>
         <div className="mb-5">
