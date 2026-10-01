@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/src/lib/supabase/client";
 import {
   saveListing,
@@ -509,15 +510,14 @@ export default function ListingForm({ categories, listing }: ListingFormProps) {
           )}
         </div>
       </section>
-
       {/* Submit */}
       <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end">
-        <a
+        <Link
           href="/listings"
           className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           Cancel
-        </a>
+        </Link>
 
         <button
           type="submit"
