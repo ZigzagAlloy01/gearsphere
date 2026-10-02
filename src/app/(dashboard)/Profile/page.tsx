@@ -1,6 +1,7 @@
 import { createClient } from "@/src/lib/supabase/server";
 import { logoutAction } from "@/src/app/(auth)/logout/actions";
 import ProfileForm from "./profile-form";
+import AccountSettings from "./account-settings";
 
 export default async function ProfilePage() {
   async function profileLogoutAction() {
@@ -40,6 +41,7 @@ export default async function ProfilePage() {
   return (
     <main className="min-h-screen bg-gray-50">
       <section className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
+        {/* Page Header */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl font-bold text-secondary sm:text-3xl">
             My Profile
@@ -84,6 +86,7 @@ export default async function ProfilePage() {
                 <p className="text-sm font-medium text-gray-500">
                   Full Name
                 </p>
+
                 <p className="mt-1 break-words text-base text-secondary">
                   {fullName}
                 </p>
@@ -93,6 +96,7 @@ export default async function ProfilePage() {
                 <p className="text-sm font-medium text-gray-500">
                   Email Address
                 </p>
+
                 <p className="mt-1 break-words text-base text-secondary">
                   {email}
                 </p>
@@ -102,6 +106,7 @@ export default async function ProfilePage() {
                 <p className="text-sm font-medium text-gray-500">
                   Member Since
                 </p>
+
                 <p className="mt-1 text-base text-secondary">
                   {memberSince}
                 </p>
@@ -111,6 +116,7 @@ export default async function ProfilePage() {
                 <p className="text-sm font-medium text-gray-500">
                   Account Type
                 </p>
+
                 <p className="mt-1 break-words text-base text-secondary">
                   GearSphere Member
                 </p>
@@ -120,48 +126,20 @@ export default async function ProfilePage() {
         </div>
 
         {/* Edit Profile */}
-          <div className="mt-6 rounded-xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
-            <h3 className="text-lg font-semibold text-secondary sm:text-xl">
-              Edit Profile
-            </h3>
-
-            <p className="mt-2 text-sm text-gray-600 sm:text-base">
-              Update the name associated with your GearSphere account.
-            </p>
-
-            <ProfileForm fullName={fullName} />
-          </div>
-
-
-        {/* Account Settings */}
         <div className="mt-6 rounded-xl bg-white p-5 shadow-sm sm:mt-8 sm:p-8">
           <h3 className="text-lg font-semibold text-secondary sm:text-xl">
-            Account Settings
+            Edit Profile
           </h3>
 
           <p className="mt-2 text-sm text-gray-600 sm:text-base">
-            Manage your account security and preferences.
+            Update the name associated with your GearSphere account.
           </p>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <button
-              type="button"
-              className="w-full rounded-lg border border-gray-300 px-5 py-3 text-sm font-medium text-secondary transition hover:bg-gray-50 sm:w-auto"
-            >
-              Change Password
-            </button>
-
-            <form action={profileLogoutAction}>
-
-              <button
-                type="submit"
-                className="w-full rounded-lg border border-red-200 px-5 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50 sm:w-auto"
-              >
-                Sign Out
-              </button>
-            </form>
-          </div>
+          <ProfileForm fullName={fullName} />
         </div>
+
+        {/* Account Settings */}
+        <AccountSettings onSignOut={profileLogoutAction} />
       </section>
     </main>
   );
