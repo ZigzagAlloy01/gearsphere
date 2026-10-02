@@ -1,11 +1,24 @@
 "use client";
 
-import { useActionState } from "react";
-import { saveListing, type ListingActionState } from "@/src/app/(dashboard)/listings/actions";
+import { useActionState, useEffect, useState } from "react";
+import Link from "next/link";
+import { createClient } from "@/src/lib/supabase/client";
+import {
+  saveListing,
+  type ListingActionState,
+} from "@/src/app/(dashboard)/listings/actions";
 
 type Category = {
   id: string;
   name: string;
+};
+
+type ListingImage = {
+  id: string;
+
+  image_url: string;
+  storage_path: string | null;
+  display_order: number;
 };
 
 type Listing = {
@@ -19,6 +32,12 @@ type Listing = {
   country: string | null;
   latitude: number | null;
   longitude: number | null;
+  listing_images: ListingImage[];
+};
+
+type SelectedImage = {
+  file: File;
+  preview: string;
 };
 
 type ListingFormProps = {
@@ -32,10 +51,7 @@ const initialState: ListingActionState = {};
 // LISTING FORM COMPONENT
 // -------------------------
 
-export default function ListingForm({
-  categories,
-  listing,
-}: ListingFormProps) {
+export default function ListingForm({ categories, listing }: ListingFormProps) {
   const [state, formAction, pending] = useActionState(
     saveListing,
     initialState,
@@ -43,10 +59,74 @@ export default function ListingForm({
 
   const isEditing = Boolean(listing);
 
+  const [SelectedImages, setSelectedImages] = useState<SelectedImage[]>([]);
+  const [RemovedImageIds, setRemovedImageIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!state?.listingId || SelectedImages.length === 0) {
+      return;
+    }
+
+    async function uploadImages() {
+      const supabase = createClient();
+
+      const existingImageCount = listing?.listing_images.length ?? 0;
+
+      for (const [index, selectedImage] of SelectedImages.entries()) {
+        const file = selectedImage.file;
+
+        const fileExtension = file.name.split(".").pop();
+        const uniqueFileName = `${crypto.randomUUID()}.${fileExtension}`;
+
+        const filePath = `listings/${state.listingId}/${uniqueFileName}`;
+
+        const { error } = await supabase.storage
+          .from("listing-images")
+          .upload(filePath, file);
+
+        if (error) {
+          console.error("Image upload error:", error);
+          return;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("listing-images")
+          .getPublicUrl(filePath);
+
+        const imageUrl = publicUrlData.publicUrl;
+
+        const { error: imageRecordError } = await supabase
+          .from("listing_images")
+          .insert({
+            listing_id: state.listingId,
+            image_url: imageUrl,
+            storage_path: filePath,
+            display_order: existingImageCount + index,
+          });
+
+        if (imageRecordError) {
+          console.error("Listing image record error:", imageRecordError);
+
+          await supabase.storage.from("listing-images").remove([filePath]);
+
+          return;
+        }
+      }
+    }
+
+    uploadImages();
+  }, [state?.listingId, SelectedImages]);
+
   return (
     <form action={formAction} className="space-y-6">
-      {listing && (
-        <input type="hidden" name="id" value={listing.id} />
+      {listing && <input type="hidden" name="id" value={listing.id} />}
+
+      {isEditing && (
+        <input
+          type="hidden"
+          name="removed_image_ids"
+          value={JSON.stringify(RemovedImageIds)}
+        />
       )}
 
       {state?.error && (
@@ -55,6 +135,17 @@ export default function ListingForm({
           className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
         >
           {state.error}
+        </div>
+      )}
+
+      {state?.listingId && (
+        <div
+          role="status"
+          className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+        >
+          {isEditing
+            ? "Listing updated successfully."
+            : "Listing created successfully."}
         </div>
       )}
 
@@ -172,9 +263,7 @@ export default function ListingForm({
       {/* Location */}
       <section className="border-t border-slate-100 pt-6">
         <div className="mb-5">
-          <h2 className="text-xl font-semibold text-slate-900">
-            Location
-          </h2>
+          <h2 className="text-xl font-semibold text-slate-900">Location</h2>
 
           <p className="mt-1 text-sm text-slate-500">
             Help renters know where the equipment is located.
@@ -230,7 +319,7 @@ export default function ListingForm({
               id="country"
               name="country"
               type="text"
-              defaultValue={listing?.country ?? "USA"}
+              defaultValue={listing?.country ?? ""}
               placeholder="Country"
               className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10"
             />
@@ -298,14 +387,137 @@ export default function ListingForm({
         </div>
       </section>
 
+      {/* Images */}
+      <section className="border-t border-slate-100 pt-6">
+        <div className="mb-5">
+          <h2 className="text-xl font-semibold text-slate-900">
+            Equipment Images
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Add photos of the equipment to help renters know what they are
+            renting.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <label
+            htmlFor="listing-images"
+            className="block cursor-pointer rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-8 text-center transition hover:border-primary hover:bg-slate-100"
+          >
+            <span className="block text-sm font-medium text-slate-700">
+              Choose equipment images
+            </span>
+
+            <span className="mt-1 block text-xs text-slate-500">
+              JPEG, PNG, WebP or GIF — up to 5 MB per image
+            </span>
+
+            <input
+              id="listing-images"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              multiple
+              className="sr-only"
+              onChange={(event) => {
+                const files = Array.from(event.target.files ?? []);
+
+                const validImages = files.filter((file) => {
+                  const validType = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp",
+                    "image/gif",
+                  ].includes(file.type);
+
+                  const validSize = file.size <= 5 * 1024 * 1024;
+
+                  return validType && validSize;
+                });
+
+                const newImages = validImages.map((file) => ({
+                  file,
+                  preview: URL.createObjectURL(file),
+                }));
+
+                setSelectedImages((current) => [...current, ...newImages]);
+
+                event.target.value = "";
+              }}
+            />
+          </label>
+
+          {((listing?.listing_images?.length ?? 0) > 0 ||
+            SelectedImages.length > 0) && (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+              {listing?.listing_images
+                .filter((image) => !RemovedImageIds.includes(image.id))
+                .sort((a, b) => a.display_order - b.display_order)
+                .map((image, index) => (
+                  <div
+                    key={image.id}
+                    className="relative overflow-hidden rounded-lg border border-slate-200 bg-white"
+                  >
+                    <img
+                      src={image.image_url}
+                      alt={`Equipment image ${index + 1}`}
+                      className="aspect-square w-full object-cover"
+                    />
+
+                    <span className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
+                      Existing
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRemovedImageIds((current) => [...current, image.id]);
+                      }}
+                      className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white transition hover:bg-black"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+
+              {SelectedImages.map((image, index) => (
+                <div
+                  key={`${image.file.name}-${index}`}
+                  className="relative overflow-hidden rounded-lg border border-slate-200 bg-white"
+                >
+                  <img
+                    src={image.preview}
+                    alt={`New equipment image ${index + 1}`}
+                    className="aspect-square w-full object-cover"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      URL.revokeObjectURL(image.preview);
+
+                      setSelectedImages((current) =>
+                        current.filter((_, imageIndex) => imageIndex !== index),
+                      );
+                    }}
+                    className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white transition hover:bg-black"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
       {/* Submit */}
       <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-end">
-        <a
+        <Link
           href="/listings"
           className="rounded-lg border border-slate-300 bg-white px-5 py-3 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           Cancel
-        </a>
+        </Link>
 
         <button
           type="submit"

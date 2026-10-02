@@ -17,6 +17,10 @@ type ListingCardProps = {
         }
       | { name: string }[]
       | null;
+    listing_images: {
+      image_url: string;
+      display_order: number;
+    }[];
   };
 };
 
@@ -30,17 +34,49 @@ export default function ListingCard({ listing }: ListingCardProps) {
     ? listing.category[0]?.name
     : listing.category?.name;
 
+  const primaryImage = [...listing.listing_images].sort(
+    (a, b) => a.display_order - b.display_order,
+  )[0]?.image_url;
+
   return (
     <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
-      {/* Image placeholder */}
-      <div className="flex h-40 items-center justify-center bg-slate-100">
-        <div className="text-center">
-          <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-full bg-primary/10 text-2xl">
-            🧰
+      {/* Equipment image */}
+      <Link
+        href={`/listings/${listing.id}`}
+        className="block h-40 overflow-hidden bg-slate-100"
+      >
+        {primaryImage ? (
+          <img
+            src={primaryImage}
+            alt={listing.title}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <div className="text-center">
+              <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect width="18" height="18" x="3" y="3" rx="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <path d="m21 15-5-5L5 21" />
+                </svg>
+              </div>
+              <p className="text-xs font-medium text-slate-400">
+                Equipment image
+              </p>
+            </div>
           </div>
-          <p className="text-xs font-medium text-slate-400">Equipment image</p>
-        </div>
-      </div>
+        )}
+      </Link>
 
       <div className="p-5">
         {/* Category + Status */}
@@ -61,9 +97,12 @@ export default function ListingCard({ listing }: ListingCardProps) {
         </div>
 
         {/* Title */}
-        <h2 className="line-clamp-1 text-xl font-semibold text-slate-900">
+        <Link
+          href={`/listings/${listing.id}`}
+          className="line-clamp-1 text-xl font-semibold text-slate-900 hover:text-primary"
+        >
           {listing.title}
-        </h2>
+        </Link>
 
         {/* Description */}
         <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
@@ -72,7 +111,21 @@ export default function ListingCard({ listing }: ListingCardProps) {
 
         {/* Location */}
         {location && (
-          <p className="mt-4 text-sm text-slate-500">📍 {location}</p>
+          <p className="mt-4 inline-flex items-center gap-1.5 text-sm text-slate-500">
+            <svg
+              className="size-4 shrink-0 text-slate-400"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
+              <circle cx="12" cy="10" r="2.5" />
+            </svg>
+            <span>{location}</span>
+          </p>
         )}
 
         {/* Price */}
