@@ -24,6 +24,10 @@ export default function DashboardHeader() {
             My Listings
           </Link>
 
+          <Link href="/requests" className={styles.navLink}>
+            Rental requests
+          </Link>
+
           <Link href="/Profile" className={styles.navLink}>
             Profile
           </Link>
