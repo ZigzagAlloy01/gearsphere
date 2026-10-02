@@ -29,8 +29,8 @@ export async function getLandingContent() {
     testimonials: [] as Testimonial[],
     demo: true,
   };
-  const url = process.env.GEARSPHERE_DATABASE_URL;
-  const key = process.env.GEARSPHERE_ANON_KEY;
+  const url = process.env.GEARSPHERE_DATABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.GEARSPHERE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) return fallback;
 
   // Public content always uses the anonymous key, independent of a visitor's session.
