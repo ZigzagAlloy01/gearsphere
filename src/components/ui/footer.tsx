@@ -38,7 +38,7 @@ export default function Footer() {
             <Link href="/register" className={styles.footerLink}>
               Sign Up
             </Link>
-            <Link href="/register" className={styles.footerLink}>
+            <Link href="/dashboard" className={styles.footerLink}>
               List Your Equipment
             </Link>
           </nav>

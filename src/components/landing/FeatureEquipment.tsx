@@ -1,6 +1,8 @@
 "use client";
 
 import LandingImage from "./LandingImage";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import Icon from "./Icon";
 import { useCatalog } from "./catalog";
@@ -8,14 +10,17 @@ import { categoryImage, formatPrice, type Equipment, type LandingCategory } from
 import styles from "./landing.module.css";
 
 export default function FeatureEquipment({
-  equipment, categories, demo,
+  equipment, categories, demo, isAuthenticated,
 }: {
   equipment: Equipment[];
   categories: LandingCategory[];
   demo: boolean;
+  isAuthenticated: boolean;
 }) {
   const { category, setCategory } = useCatalog();
   const [selected, setSelected] = useState<Equipment | null>(null);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
   const visibleEquipment = equipment.filter(
     (item) => category === "All equipment" || item.category === category,
@@ -23,6 +28,7 @@ export default function FeatureEquipment({
   const visibleFilters = [...new Set(["All equipment", ...categories.map(item => item.name), ...equipment.map(item => item.category)])];
 
   function openDetails(item: Equipment) {
+    setShowLoginPrompt(false);
     setSelected(item);
     dialog.current?.showModal();
   }
@@ -193,12 +199,34 @@ export default function FeatureEquipment({
                 available for demo equipment.
               </p>}
               <button
-                onClick={() => dialog.current?.close()}
+                onClick={() => {
+                  if (isAuthenticated) {
+                    dialog.current?.close();
+                    router.push("/browse");
+                  } else {
+                    setShowLoginPrompt(true);
+                  }
+                }}
                 className={`${styles.button} ${styles.primary} mt-5 w-full`}
+                aria-expanded={showLoginPrompt}
+                aria-controls="explore-login-prompt"
               >
                 Continue exploring
                 <Icon name="arrow" width={17} height={17} />
               </button>
+              {showLoginPrompt && (
+                <div id="explore-login-prompt" className="mt-4 rounded-lg bg-slate-50 p-4">
+                  <p role="status" className="text-sm leading-relaxed text-slate-600">
+                    Please log in to explore more equipment and see full details.
+                  </p>
+                  <Link href="/login?next=%2Fbrowse" className={`${styles.button} ${styles.primary} mt-4 w-full`}>
+                    Log in
+                  </Link>
+                  <button onClick={() => dialog.current?.close()} className={`${styles.button} ${styles.secondary} mt-3 w-full`}>
+                    Keep browsing previews
+                  </button>
+                </div>
+              )}
             </div>
           </>
         )}

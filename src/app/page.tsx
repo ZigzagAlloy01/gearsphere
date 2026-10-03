@@ -45,6 +45,7 @@ export default async function Home() {
             equipment={content.equipment}
             categories={content.categories}
             demo={content.demo}
+            isAuthenticated={Boolean(user)}
           />
         </CatalogProvider>
         <WhyGearSphere />

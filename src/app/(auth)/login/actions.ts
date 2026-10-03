@@ -2,6 +2,7 @@
 
 import { createClient } from "@/src/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { getLoginDestination } from "@/src/lib/auth/navigation";
 
 export async function loginAction(prevState: { error?: string } | null, formData: FormData) {
   const email = formData.get("email") as string;
@@ -18,5 +19,5 @@ export async function loginAction(prevState: { error?: string } | null, formData
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  redirect(getLoginDestination(formData.get("next")));
 }

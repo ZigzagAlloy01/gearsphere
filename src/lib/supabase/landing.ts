@@ -85,8 +85,9 @@ export async function getLandingContent() {
 
   const [categories, listings, reviews] = await Promise.all([
     read("categories", "*", true),
-    // Optional image/currency fields may be added without breaking older schemas.
-    read("listings", "*"),
+    // The view exposes category_name and primary_image (first listing photo).
+    // Rows without a photo fall back to the generic category image below.
+    read("available_listings", "*"),
     read("reviews", "id,comment,rating,created_at"),
   ]);
 

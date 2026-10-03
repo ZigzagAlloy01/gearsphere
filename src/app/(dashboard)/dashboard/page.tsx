@@ -12,7 +12,14 @@ export default async function DashboardPage() {
 
   const fullName = user.user_metadata?.full_name;
   const name = typeof fullName === "string" ? fullName.trim() : "";
-  const [listingResult, updateResult, sentRequestResult, receivedRequestResult, rentalResult] = await Promise.all([
+  const [
+    listingResult,
+    updateResult,
+    sentRequestResult,
+    receivedRequestResult,
+    rentalResult,
+    favoriteResult,
+  ] = await Promise.all([
     supabase
       .from("listings")
       .select("id, title, status, created_at", { count: "exact" })
@@ -41,12 +48,17 @@ export default async function DashboardPage() {
       .from("rentals")
       .select("id", { count: "exact", head: true })
       .or(`owner_id.eq.${user.id},borrower_id.eq.${user.id}`),
+    supabase
+      .from("favorites")
+      .select("listing_id", { count: "exact", head: true })
+      .eq("user_id", user.id),
   ]);
 
   const listings = listingResult.error ? [] : listingResult.data ?? [];
   const requestsUnavailable = sentRequestResult.error || receivedRequestResult.error
     || sentRequestResult.count === null || receivedRequestResult.count === null;
   const rentalsUnavailable = rentalResult.error || rentalResult.count === null;
+  const favoritesUnavailable = favoriteResult.error || favoriteResult.count === null;
   const stats = [
     {
       label: "Listings",
@@ -57,13 +69,20 @@ export default async function DashboardPage() {
       label: "Requests",
       value: requestsUnavailable ? "—" : sentRequestResult.count! + receivedRequestResult.count!,
       note: requestsUnavailable ? "Unable to load requests." : "Sent and received · All statuses",
+      href: "/requests",
     },
     {
       label: "Rentals",
       value: rentalsUnavailable ? "—" : rentalResult.count,
       note: rentalsUnavailable ? "Unable to load rentals." : "As owner or borrower · All statuses",
+      href: "/requests",
     },
-    { label: "Messages", value: "—", note: "Not available yet." },
+    {
+      label: "Favorites",
+      value: favoritesUnavailable ? "—" : favoriteResult.count,
+      note: favoritesUnavailable ? "Unable to load favorites." : "Equipment saved for later",
+      href: "/favorites",
+    },
   ];
 
   const activityError = listingResult.error || updateResult.error;
@@ -105,19 +124,36 @@ export default async function DashboardPage() {
 
       {/* Statistics */}
       <section className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
+        {stats.map((stat) => {
+          const content = (
+            <>
             <h3 className="text-sm font-medium text-slate-500">{stat.label}</h3>
 
             <p className="mt-2 text-3xl font-bold text-slate-900">
               {stat.value}
             </p>
             {stat.note && <p className="mt-2 text-sm text-slate-500">{stat.note}</p>}
-          </div>
-        ))}
+            </>
+          );
+
+          return stat.href ? (
+            <Link
+              key={stat.label}
+              href={stat.href}
+              aria-label={`View ${stat.label.toLowerCase()}`}
+              className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              {content}
+            </Link>
+          ) : (
+            <div
+              key={stat.label}
+              className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              {content}
+            </div>
+          );
+        })}
       </section>
 
       {/* Quick Actions */}

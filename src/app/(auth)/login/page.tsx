@@ -1,10 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useActionState } from "react";
+import { use, useState, useActionState } from "react";
 import { loginAction } from "./actions";
+import { getLoginDestination } from "@/src/lib/auth/navigation";
 
-export default function LoginPage() {
+export default function LoginPage({ searchParams }: {
+  searchParams: Promise<{ next?: string | string[] }>;
+}) {
+  const params = use(searchParams);
+  const destination = getLoginDestination(params.next);
   const [showPassword, setShowPassword] = useState(false);
   const [state, formAction, isPending] = useActionState(loginAction, null);
 
@@ -31,6 +36,7 @@ export default function LoginPage() {
       {/* Login Card */}
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <form className="space-y-5" action={formAction}>
+          <input type="hidden" name="next" value={destination} />
           {/* Error Message */}
           {state?.error && (
             <div

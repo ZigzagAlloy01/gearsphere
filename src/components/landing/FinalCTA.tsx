@@ -39,7 +39,7 @@ export default function FinalCTA() {
               Your equipment could be someone else’s next big possibility.
             </p>
             <Link
-              href="/register"
+              href="/dashboard"
               className={`${styles.button} ${styles.inverse} mt-5`}
             >
               List Your Equipment
