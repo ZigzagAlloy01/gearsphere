@@ -33,7 +33,7 @@ export default function Hero() {
               <Icon name="arrow" width={17} height={17} />
             </a>
             <Link
-              href="/register"
+              href="/dashboard"
               className={`${styles.button} ${styles.secondary}`}
             >
               List Your Equipment

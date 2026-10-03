@@ -53,15 +53,15 @@ export default function ListingGallery({
     }
 
     return (
-        <div>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100 shadow-sm sm:aspect-[16/10]">
+        <div className="w-full max-w-4xl">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-100 shadow-sm sm:aspect-video">
                 {currentImage ? (
                 <EquipmentImage
                     src={currentImage}
                     alt={title}
                     fill
                     priority={selectedIndex === 0}
-                    sizes="(max-width: 1024px) 100vw, 70vw"
+                    sizes="(max-width: 1024px) 100vw, 896px"
                     className="object-cover"
                     />
                 ) : (

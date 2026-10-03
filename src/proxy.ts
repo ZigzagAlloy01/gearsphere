@@ -1,8 +1,8 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/src/lib/supabase/server";
 
-// If trying to access the dashboard without being logged in, redirect to login page
-export async function middleware(request: NextRequest) {
+// Refresh the session and protect private app routes.
+export async function proxy(request: NextRequest) {
   return await updateSession(request);
 }
 
