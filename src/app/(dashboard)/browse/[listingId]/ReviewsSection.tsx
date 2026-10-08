@@ -51,6 +51,12 @@ export default function ReviewsSection({
     setError("");
 
     try {
+      console.log("Submitting review:", {
+        rentalId: eligibleRentalId,
+        listingId,
+        rating,
+        comment: comment.trim() || null,
+      });
       const response = await fetch(
         "/api/reviews",
         {
@@ -205,8 +211,7 @@ export default function ReviewsSection({
         </p>
       )}
 
-      {authenticated &&
-        eligibleRentalId && (
+      {authenticated && (
           <form
             onSubmit={submitReview}
             className="mt-8 border-t border-slate-100 pt-7"

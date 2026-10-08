@@ -26,6 +26,11 @@ type RentalRequest = {
     name: string;
     image: string | null;
   };
+
+  rental?: {
+    id: string;
+    status: string;
+  } | null;
 };
 
 export default async function RentalRequestsPage() {
@@ -70,10 +75,10 @@ export default async function RentalRequestsPage() {
       ascending: false,
     });
 
-  if (error) {
-    console.error(
-      "Rental requests page error:",
-      JSON.stringify(error, null, 2)
+    if (error) {
+      console.error(
+        "Rental requests page error:",
+        JSON.stringify(error, null, 2)
     );
 
     return (
@@ -90,9 +95,64 @@ export default async function RentalRequestsPage() {
     );
   }
 
-  const requests =
-    (data ?? []) as unknown as RentalRequest[];
+  const requestIds =
+    (data ?? []).map(
+      (request) => request.id
+    );
 
+  const { data: rentals, error: rentalsError } =
+    requestIds.length > 0
+      ? await supabase
+          .from("rentals")
+          .select(`
+            id,
+            rental_request_id,
+            status
+          `)
+          .in("rental_request_id", requestIds)
+      : { data: [], error: null };
+  
+  if (rentalsError) {
+    console.error(
+      "Rentals page error:",
+      JSON.stringify(rentalsError, null, 2)
+    );
+
+    return (
+      <main className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl rounded-2xl border border-red-200 bg-white p-8 text-center">
+          <h1 className="text-xl font-bold text-slate-900">
+            Unable to load rentals
+          </h1>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Please try again later.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  const rentalsByRequestId = new Map<string, { id: string; status: string }>();
+
+  (rentals ?? []).forEach((rental: any) => {
+    if (rental?.rental_request_id && rental?.id) {
+      rentalsByRequestId.set(rental.rental_request_id, {
+        id: rental.id,
+        status: rental.status,
+      });
+    }
+  });
+
+  const requests: RentalRequest[] = (data ?? []).map((request: any) => {
+    const matchingRental = rentalsByRequestId.get(request.id);
+    
+    return {
+      ...request,
+      rental: matchingRental?.id ? matchingRental : null,
+    };
+  });
+  
   const incoming = requests.filter(
     (request) =>
       request.listing.owner_id === user.id

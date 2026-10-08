@@ -136,6 +136,7 @@ export default async function ListingDetailsPage({
             | null = null;
 
         if (user) {
+            
             const { data: completedRentals } =
                 await supabase
                 .from("rentals")
@@ -159,6 +160,12 @@ export default async function ListingDetailsPage({
                 (completedRentals ?? []).map(
                 (rental) => rental.id
                 );
+            
+            console.log("Review debug", {
+                userId: user.id,
+                listingId: listing.id,
+                completedRentals,
+            });
 
             if (rentalIds.length > 0) {
                 const { data: existingReviews } =
