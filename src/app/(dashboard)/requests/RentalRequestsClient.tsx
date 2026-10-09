@@ -143,7 +143,9 @@ export default function RentalRequestsClient({ incoming, outgoing }: Props) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data?.error || "Unable to cancel this request.");
+        throw new Error(
+          data?.error || `Unable to cancel this request (HTTP ${response.status}).`
+        );
       }
 
       router.refresh();

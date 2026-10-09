@@ -49,7 +49,7 @@ export async function POST(
     return NextResponse.json(
       {
         error:
-          "Rental and listing IDs are required.",
+          "You cannot write a review if you haven't rented this product.",
       },
       { status: 400 }
     );
